@@ -4,33 +4,32 @@ public class Main {
 
         Pedido pedidoComida = new PedidoComida(
                 1,
-                "Av. Providencia 1234",
-                "Comida"
+                "Av. Italia 456",
+                4
         );
 
         Pedido pedidoEncomienda = new PedidoEncomienda(
                 2,
-                "Av. Apoquindo 2500",
-                "Encomienda"
+                "Av. Independencia 123",
+                6
         );
 
         Pedido pedidoExpress = new PedidoExpress(
                 3,
-                "Av. Irarrázaval 1800",
-                "Express"
+                "Av. Apoquindo 1500",
+                7
         );
 
-        pedidoComida.asignarRepartidor();
-        pedidoComida.asignarRepartidor("Juan Pérez");
+        mostrarPedido("Pedido Comida", pedidoComida);
+        mostrarPedido("Pedido Encomienda", pedidoEncomienda);
+        mostrarPedido("Pedido Express", pedidoExpress);
+    }
 
+    public static void mostrarPedido(String tipo, Pedido pedido) {
+        System.out.println("=== " + tipo + " ===");
+        pedido.mostrarResumen();
+        System.out.println("Tiempo estimado de entrega: "
+                + pedido.calcularTiempoEntrega() + " minutos");
         System.out.println();
-
-        pedidoEncomienda.asignarRepartidor();
-        pedidoEncomienda.asignarRepartidor("Camila Soto");
-
-        System.out.println();
-
-        pedidoExpress.asignarRepartidor();
-        pedidoExpress.asignarRepartidor("Luis Díaz");
     }
 }
