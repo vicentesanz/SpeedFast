@@ -2,9 +2,11 @@
 
 ## Descripción
 
-Proyecto desarrollado para la actividad formativa de la Semana 1 de Desarrollo Orientado a Objetos II.
+Proyecto desarrollado para las actividades formativas de Desarrollo Orientado a Objetos II.
 
-SpeedFast es un sistema de reparto a domicilio que representa distintos tipos de pedidos mediante el uso de herencia y polimorfismo en Java.
+SpeedFast es un sistema de reparto a domicilio que representa distintos tipos de pedidos mediante el uso de programación orientada a objetos en Java.
+
+En la Semana 2 el proyecto fue actualizado para utilizar una clase abstracta `Pedido` y calcular tiempos estimados de entrega según el tipo de pedido.
 
 El sistema considera tres tipos de pedidos:
 
@@ -12,36 +14,68 @@ El sistema considera tres tipos de pedidos:
 - Pedido de encomienda.
 - Pedido express.
 
-Cada tipo de pedido implementa una lógica diferente para la asignación de repartidores.
-
 ## Conceptos aplicados
 
 - Programación Orientada a Objetos.
 - Encapsulamiento.
 - Herencia.
+- Clases abstractas.
+- Métodos abstractos.
 - Polimorfismo.
 - Sobreescritura de métodos.
-- Sobrecarga de métodos.
+- Reutilización de código.
 
 ## Estructura del proyecto
 
-- `Pedido.java`: clase base del sistema.
-- `PedidoComida.java`: representa pedidos de comida y verifica el uso de mochila térmica.
-- `PedidoEncomienda.java`: representa pedidos de encomienda y valida peso y embalaje.
-- `PedidoExpress.java`: representa pedidos express y busca un repartidor cercano con disponibilidad inmediata.
-- `Main.java`: clase utilizada para probar el funcionamiento del sistema.
+- `Pedido.java`: clase abstracta que contiene los atributos y métodos comunes de los pedidos.
+- `PedidoComida.java`: calcula el tiempo de entrega considerando 15 minutos base más 2 minutos por kilómetro.
+- `PedidoEncomienda.java`: calcula el tiempo de entrega considerando 20 minutos base más 1.5 minutos por kilómetro.
+- `PedidoExpress.java`: calcula 10 minutos de entrega y agrega 5 minutos adicionales cuando la distancia supera los 5 kilómetros.
+- `Main.java`: crea los distintos tipos de pedidos y muestra su información y tiempo estimado de entrega.
 
 ## Funcionamiento
 
-La clase `Pedido` contiene los atributos generales de un pedido y define el método `asignarRepartidor()`.
+La clase abstracta `Pedido` contiene los atributos:
 
-Las clases `PedidoComida`, `PedidoEncomienda` y `PedidoExpress` heredan de `Pedido` y sobrescriben el método `asignarRepartidor()` para implementar un comportamiento específico según el tipo de pedido.
+- `idPedido`
+- `direccionEntrega`
+- `distanciaKm`
 
-También se utiliza la sobrecarga mediante el método:
+También implementa el método:
 
-`asignarRepartidor(String nombreRepartidor)`
+`mostrarResumen()`
 
-Este método permite indicar el nombre del repartidor que fue asignado al pedido.
+Este método muestra los datos básicos del pedido.
+
+Además, declara el método abstracto:
+
+`calcularTiempoEntrega()`
+
+Cada subclase implementa este método con una lógica distinta según el tipo de pedido.
+
+## Cálculo de tiempos
+
+### Pedido de comida
+
+Tiempo de entrega:
+
+`15 minutos + 2 minutos por kilómetro`
+
+### Pedido de encomienda
+
+Tiempo de entrega:
+
+`20 minutos + 1.5 minutos por kilómetro`
+
+El resultado se ajusta a un valor entero.
+
+### Pedido express
+
+Tiempo base:
+
+`10 minutos`
+
+Si la distancia es mayor a 5 kilómetros, se agregan 5 minutos adicionales.
 
 ## Ejecución
 
@@ -56,12 +90,11 @@ Para ejecutar el programa:
 
 ## Resultado esperado
 
-El programa muestra por consola:
+Con los datos utilizados en `Main`, el programa muestra:
 
-- La verificación de mochila térmica para pedidos de comida.
-- La validación de peso y embalaje para pedidos de encomienda.
-- La búsqueda de un repartidor cercano con disponibilidad inmediata para pedidos express.
-- El nombre del repartidor asignado a cada pedido.
+- Pedido de comida a 4 km: 23 minutos.
+- Pedido de encomienda a 6 km: 29 minutos.
+- Pedido express a 7 km: 15 minutos.
 
 ## Autor
 
