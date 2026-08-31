@@ -29,8 +29,6 @@ public class Main {
         System.out.println("=== PEDIDO COMIDA ===");
 
         pedidoComida.reservar();
-
-        // Asignación automática
         pedidoComida.asignarRepartidor();
 
         mostrarPedido(pedidoComida);
@@ -59,8 +57,6 @@ public class Main {
         System.out.println("=== PEDIDO EXPRESS ===");
 
         pedidoExpress.reservar();
-
-        // Asignación automática
         pedidoExpress.asignarRepartidor();
 
         mostrarPedido(pedidoExpress);
@@ -69,7 +65,12 @@ public class Main {
 
         System.out.println();
 
-        // HISTORIAL
+        // HISTORIAL INDIVIDUAL DE CADA PEDIDO
+        pedidoComida.verHistorial();
+        pedidoEncomienda.verHistorial();
+        pedidoExpress.verHistorial();
+
+        // HISTORIAL GENERAL DE ENTREGAS
         controlador.verHistorial();
     }
 
