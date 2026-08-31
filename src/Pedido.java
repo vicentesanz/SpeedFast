@@ -1,4 +1,4 @@
-public abstract class Pedido {
+public abstract class Pedido implements Despachable, Cancelable {
 
     private int idPedido;
     private String direccionEntrega;
@@ -46,14 +46,28 @@ public abstract class Pedido {
         System.out.println("Estado: " + estado);
     }
 
-    // Cada tipo de pedido realizará una asignación automática diferente.
+    public void reservar() {
+        estado = "Reservado";
+        System.out.println("Pedido #" + idPedido + " reservado correctamente.");
+    }
+
+    @Override
+    public void despachar() {
+        estado = "Despachado";
+        System.out.println("Pedido #" + idPedido + " despachado correctamente.");
+    }
+
+    @Override
+    public void cancelar() {
+        estado = "Cancelado";
+        System.out.println("Pedido #" + idPedido + " cancelado exitosamente.");
+    }
+
     public abstract void asignarRepartidor();
 
-    // Sobrecarga: permite asignar manualmente un repartidor.
     public void asignarRepartidor(String nombre) {
         this.repartidor = nombre;
     }
 
-    // Cada tipo de pedido calcula su tiempo de entrega de forma diferente.
     public abstract int calcularTiempoEntrega();
 }
