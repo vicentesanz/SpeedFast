@@ -33,14 +33,14 @@ Cada tipo de pedido posee una lógica diferente para la asignación de repartido
 
 ## Estructura del proyecto
 
-- `Pedido.java`: clase abstracta que contiene los atributos y comportamientos comunes de todos los pedidos.
+- `Pedido.java`: clase abstracta que contiene los atributos y comportamientos comunes de todos los pedidos y administra el historial individual.
 - `PedidoComida.java`: representa pedidos de comida.
 - `PedidoEncomienda.java`: representa pedidos de encomiendas.
 - `PedidoExpress.java`: representa pedidos express.
 - `Despachable.java`: interfaz que define la operación `despachar()`.
 - `Cancelable.java`: interfaz que define la operación `cancelar()`.
 - `Rastreable.java`: interfaz que define la operación `verHistorial()`.
-- `ControladorDeEnvios.java`: administra y muestra el historial de entregas.
+- `ControladorDeEnvios.java`: administra y muestra el historial general de entregas.
 - `Main.java`: realiza la simulación completa del sistema.
 
 ## Clase abstracta Pedido
@@ -54,6 +54,7 @@ Contiene los atributos comunes:
 - `distanciaKm`
 - `repartidor`
 - `estado`
+- `historial`
 
 Además, contiene comportamientos reutilizados por los distintos tipos de pedido, como:
 
@@ -61,6 +62,7 @@ Además, contiene comportamientos reutilizados por los distintos tipos de pedido
 - `reservar()`
 - `despachar()`
 - `cancelar()`
+- `verHistorial()`
 - `asignarRepartidor(String nombre)`
 
 También declara los métodos abstractos:
@@ -138,7 +140,9 @@ Define:
 
 `despachar()`
 
-Permite cambiar el estado de un pedido a despachado.
+La clase `Pedido` implementa esta interfaz y las clases `PedidoComida`, `PedidoEncomienda` y `PedidoExpress` heredan esta funcionalidad.
+
+Permite cambiar el estado de un pedido a despachado y registrar dicha acción en su historial.
 
 ### Cancelable
 
@@ -146,7 +150,9 @@ Define:
 
 `cancelar()`
 
-Permite cancelar un pedido.
+La clase `Pedido` implementa esta interfaz y sus subclases heredan esta funcionalidad.
+
+Permite cancelar un pedido y registrar la cancelación en su historial individual.
 
 ### Rastreable
 
@@ -154,11 +160,36 @@ Define:
 
 `verHistorial()`
 
-Es utilizada por `ControladorDeEnvios` para mostrar las entregas registradas.
+Esta interfaz es utilizada por:
 
-## Historial de entregas
+- `Pedido`, para mostrar el historial individual de cada pedido.
+- `ControladorDeEnvios`, para mostrar el historial general de las entregas realizadas.
 
-La clase `ControladorDeEnvios` utiliza:
+De esta forma, la misma interfaz posee una aplicación diferente según la responsabilidad de cada clase.
+
+## Historial individual de pedidos
+
+Cada objeto `Pedido` mantiene su propio:
+
+`ArrayList<String>`
+
+Este historial registra acciones como:
+
+- Creación del pedido.
+- Reserva.
+- Asignación de repartidor.
+- Despacho.
+- Cancelación.
+
+El método:
+
+`verHistorial()`
+
+permite visualizar el seguimiento completo de cada pedido.
+
+## Historial general de entregas
+
+La clase `ControladorDeEnvios` también utiliza:
 
 `ArrayList<String>`
 
@@ -170,7 +201,7 @@ Cada registro guarda:
 - ID del pedido.
 - Nombre del repartidor.
 
-Los pedidos cancelados no se agregan al historial de entregas realizadas.
+Los pedidos cancelados no se agregan al historial general de entregas realizadas.
 
 ## Diagrama de clases
 
@@ -184,10 +215,12 @@ class Pedido {
     -double distanciaKm
     -String repartidor
     -String estado
+    -ArrayList~String~ historial
     +mostrarResumen()
     +reservar()
     +despachar()
     +cancelar()
+    +verHistorial()
     +asignarRepartidor()
     +asignarRepartidor(String nombre)
     +calcularTiempoEntrega()
@@ -235,6 +268,7 @@ Pedido <|-- PedidoExpress
 
 Pedido ..|> Despachable
 Pedido ..|> Cancelable
+Pedido ..|> Rastreable
 
 ControladorDeEnvios ..|> Rastreable
 ControladorDeEnvios --> Pedido : registra entregas
@@ -271,7 +305,12 @@ La clase `Main` crea tres pedidos diferentes.
 - Tiempo estimado: 15 minutos.
 - Pedido cancelado.
 
-Finalmente, el sistema muestra el historial de las entregas realizadas.
+Finalmente, el sistema muestra:
+
+- El historial individual del pedido de comida.
+- El historial individual del pedido de encomienda.
+- El historial individual del pedido express.
+- El historial general de entregas realizadas.
 
 ## Escalabilidad, reutilización y mantenibilidad
 
@@ -280,6 +319,8 @@ La utilización de una clase abstracta permite centralizar los atributos y compo
 El polimorfismo permite trabajar con objetos de distintos tipos mediante referencias de la clase `Pedido`, mientras cada subclase mantiene su propio comportamiento.
 
 Las interfaces permiten separar responsabilidades como despacho, cancelación y rastreo.
+
+La interfaz `Rastreable` puede ser utilizada por clases con responsabilidades diferentes, permitiendo que `Pedido` administre su historial individual y que `ControladorDeEnvios` administre el historial general.
 
 Esta estructura facilita agregar nuevos tipos de pedidos u otras funcionalidades sin modificar completamente las clases existentes, favoreciendo la escalabilidad y mantenibilidad del sistema.
 
