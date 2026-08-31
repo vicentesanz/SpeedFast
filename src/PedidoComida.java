@@ -5,6 +5,11 @@ public class PedidoComida extends Pedido {
     }
 
     @Override
+    public void asignarRepartidor() {
+        asignarRepartidor("Luis Díaz");
+    }
+
+    @Override
     public int calcularTiempoEntrega() {
         return (int) (15 + (2 * getDistanciaKm()));
     }

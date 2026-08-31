@@ -5,6 +5,11 @@ public class PedidoExpress extends Pedido {
     }
 
     @Override
+    public void asignarRepartidor() {
+        asignarRepartidor("Carlos Soto");
+    }
+
+    @Override
     public int calcularTiempoEntrega() {
         int tiempo = 10;
 
