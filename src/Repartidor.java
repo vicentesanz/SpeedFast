@@ -18,6 +18,9 @@ public class Repartidor implements Runnable {
 
         for (Pedido pedido : pedidos) {
 
+            // ASIGNA EL PEDIDO AL REPARTIDOR QUE LO ESTÁ PROCESANDO
+            pedido.asignarRepartidor(nombre);
+
             System.out.println(
                     "[Repartidor: " + nombre + "] Entregando "
                             + pedido.getClass().getSimpleName()
@@ -25,6 +28,7 @@ public class Repartidor implements Runnable {
             );
 
             try {
+
                 int tiempoEspera = 1000 + random.nextInt(2001);
                 Thread.sleep(tiempoEspera);
 
@@ -37,6 +41,7 @@ public class Repartidor implements Runnable {
                 );
 
             } catch (InterruptedException e) {
+
                 System.out.println(
                         "[Repartidor: " + nombre
                                 + "] La entrega fue interrumpida."
@@ -48,7 +53,8 @@ public class Repartidor implements Runnable {
         }
 
         System.out.println(
-                "[Repartidor: " + nombre + "] Finalizó todas sus entregas."
+                "[Repartidor: " + nombre
+                        + "] Finalizó todas sus entregas."
         );
     }
 }

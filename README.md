@@ -6,7 +6,7 @@ Proyecto desarrollado para las actividades de Desarrollo Orientado a Objetos II.
 
 SpeedFast es un sistema de reparto a domicilio desarrollado en Java que permite representar y gestionar distintos tipos de pedidos utilizando Programación Orientada a Objetos.
 
-Durante la Semana 3 el proyecto integra los contenidos trabajados anteriormente y agrega polimorfismo, abstracción e interfaces para representar las operaciones principales del sistema.
+Durante la Semana 4 el proyecto integra los contenidos trabajados anteriormente e incorpora programación concurrente para simular cómo varios repartidores realizan entregas al mismo tiempo.
 
 El sistema considera tres tipos de pedidos:
 
@@ -28,6 +28,11 @@ Cada tipo de pedido posee una lógica diferente para la asignación de repartido
 - Métodos abstractos.
 - Interfaces.
 - Colecciones `ArrayList`.
+- Interfaz `Runnable`.
+- Programación concurrente.
+- `Thread.sleep()`.
+- `ExecutorService`.
+- Manejo de excepciones.
 - Reutilización de código.
 - Separación de responsabilidades.
 
@@ -41,7 +46,8 @@ Cada tipo de pedido posee una lógica diferente para la asignación de repartido
 - `Cancelable.java`: interfaz que define la operación `cancelar()`.
 - `Rastreable.java`: interfaz que define la operación `verHistorial()`.
 - `ControladorDeEnvios.java`: administra y muestra el historial general de entregas.
-- `Main.java`: realiza la simulación completa del sistema.
+- `Repartidor.java`: representa un repartidor, contiene una lista de pedidos e implementa `Runnable` para procesar las entregas.
+- `Main.java`: realiza la simulación concurrente del sistema.
 
 ## Clase abstracta Pedido
 
@@ -203,6 +209,20 @@ Cada registro guarda:
 
 Los pedidos cancelados no se agregan al historial general de entregas realizadas.
 
+## Programación concurrente
+
+Durante la Semana 4 se incorporó la clase `Repartidor`, que implementa la interfaz `Runnable`.
+
+Cada repartidor posee un nombre y una lista de pedidos asignados.
+
+El método `run()` recorre los pedidos de forma secuencial y utiliza `Thread.sleep()` con tiempos aleatorios para simular el tiempo necesario para realizar cada entrega.
+
+En la clase `Main` se utiliza `ExecutorService` con un pool de tres hilos para ejecutar a los tres repartidores de manera concurrente.
+
+El programa espera a que todos los repartidores finalicen sus entregas antes de terminar.
+
+También se utiliza manejo de `InterruptedException` para controlar posibles interrupciones durante la ejecución.
+
 ## Diagrama de clases
 
 ```mermaid
@@ -241,6 +261,12 @@ class PedidoExpress {
     +calcularTiempoEntrega()
 }
 
+class Repartidor {
+    -String nombre
+    -List~Pedido~ pedidos
+    +run()
+}
+
 class Despachable {
     <<interface>>
     +despachar()
@@ -254,6 +280,11 @@ class Cancelable {
 class Rastreable {
     <<interface>>
     +verHistorial()
+}
+
+class Runnable {
+    <<interface>>
+    +run()
 }
 
 class ControladorDeEnvios {
@@ -272,45 +303,37 @@ Pedido ..|> Rastreable
 
 ControladorDeEnvios ..|> Rastreable
 ControladorDeEnvios --> Pedido : registra entregas
+
+Repartidor ..|> Runnable
+Repartidor --> Pedido : procesa
 ```
 
 ## Simulación realizada
 
-La clase `Main` crea tres pedidos diferentes.
+La clase `Main` crea seis pedidos y tres repartidores.
 
-### Pedido de comida
+### Repartidor Camila
 
-- ID: 101
-- Dirección: Av. Italia 456
-- Distancia: 4 km
-- Asignación automática de repartidor.
-- Tiempo estimado: 23 minutos.
-- Pedido despachado.
+- Pedido de comida #101.
+- Pedido express #102.
 
-### Pedido de encomienda
+### Repartidor Luis
 
-- ID: 102
-- Dirección: Av. Santa Rosa 567
-- Distancia: 7 km
-- Asignación manual de Daniela Tapia.
-- Tiempo estimado: 30 minutos.
-- Pedido despachado.
+- Pedido de encomienda #103.
+- Pedido de comida #104.
 
-### Pedido express
+### Repartidor Daniela
 
-- ID: 103
-- Dirección: Av. Apoquindo 1500
-- Distancia: 8 km
-- Asignación automática de repartidor.
-- Tiempo estimado: 15 minutos.
-- Pedido cancelado.
+- Pedido express #105.
+- Pedido de encomienda #106.
 
-Finalmente, el sistema muestra:
+Cada repartidor procesa sus dos pedidos de forma secuencial.
 
-- El historial individual del pedido de comida.
-- El historial individual del pedido de encomienda.
-- El historial individual del pedido express.
-- El historial general de entregas realizadas.
+Los tres repartidores se ejecutan de manera concurrente mediante `ExecutorService`, por lo que sus mensajes de avance pueden aparecer intercalados en consola.
+
+Las entregas utilizan pausas aleatorias mediante `Thread.sleep()`.
+
+Finalmente, el programa espera hasta que todos los repartidores hayan terminado sus entregas.
 
 ## Escalabilidad, reutilización y mantenibilidad
 
@@ -320,9 +343,9 @@ El polimorfismo permite trabajar con objetos de distintos tipos mediante referen
 
 Las interfaces permiten separar responsabilidades como despacho, cancelación y rastreo.
 
-La interfaz `Rastreable` puede ser utilizada por clases con responsabilidades diferentes, permitiendo que `Pedido` administre su historial individual y que `ControladorDeEnvios` administre el historial general.
+La incorporación de `Runnable` y `ExecutorService` permite ejecutar varios repartidores de manera concurrente sin modificar la estructura principal de los tipos de pedido.
 
-Esta estructura facilita agregar nuevos tipos de pedidos u otras funcionalidades sin modificar completamente las clases existentes, favoreciendo la escalabilidad y mantenibilidad del sistema.
+Esta estructura facilita agregar nuevos tipos de pedidos, repartidores u otras funcionalidades sin modificar completamente las clases existentes, favoreciendo la escalabilidad y mantenibilidad del sistema.
 
 ## Ejecución
 
@@ -333,7 +356,7 @@ Para ejecutarlo:
 1. Abrir el proyecto SpeedFast.
 2. Abrir `Main.java`.
 3. Ejecutar el método `main`.
-4. Revisar los resultados mostrados en consola.
+4. Revisar la ejecución concurrente de los repartidores en consola.
 
 ## Autor
 
