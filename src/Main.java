@@ -1,87 +1,114 @@
+import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 public class Main {
 
     public static void main(String[] args) {
 
-        ControladorDeEnvios controlador = new ControladorDeEnvios();
+        System.out.println("========== SPEEDFAST ==========");
+        System.out.println("=== SIMULACIÓN DE ENTREGAS CONCURRENTES ===");
+        System.out.println();
 
-        Pedido pedidoComida = new PedidoComida(
+        // PEDIDOS DEL REPARTIDOR 1
+        Pedido pedido1 = new PedidoComida(
                 101,
                 "Av. Italia 456",
                 4
         );
 
-        Pedido pedidoEncomienda = new PedidoEncomienda(
+        Pedido pedido2 = new PedidoExpress(
                 102,
+                "Av. Providencia 1200",
+                6
+        );
+
+        // PEDIDOS DEL REPARTIDOR 2
+        Pedido pedido3 = new PedidoEncomienda(
+                103,
                 "Av. Santa Rosa 567",
                 7
         );
 
-        Pedido pedidoExpress = new PedidoExpress(
-                103,
+        Pedido pedido4 = new PedidoComida(
+                104,
+                "Av. Irarrázaval 2300",
+                5
+        );
+
+        // PEDIDOS DEL REPARTIDOR 3
+        Pedido pedido5 = new PedidoExpress(
+                105,
                 "Av. Apoquindo 1500",
                 8
         );
 
-        System.out.println("========== SPEEDFAST ==========");
-        System.out.println();
-
-        // CASO 1: PEDIDO DE COMIDA
-        System.out.println("=== PEDIDO COMIDA ===");
-
-        pedidoComida.reservar();
-        pedidoComida.asignarRepartidor();
-
-        mostrarPedido(pedidoComida);
-
-        pedidoComida.despachar();
-        controlador.registrarEntrega(pedidoComida);
-
-        System.out.println();
-
-        // CASO 2: PEDIDO DE ENCOMIENDA
-        System.out.println("=== PEDIDO ENCOMIENDA ===");
-
-        pedidoEncomienda.reservar();
-
-        // Asignación manual mediante sobrecarga
-        pedidoEncomienda.asignarRepartidor("Daniela Tapia");
-
-        mostrarPedido(pedidoEncomienda);
-
-        pedidoEncomienda.despachar();
-        controlador.registrarEntrega(pedidoEncomienda);
-
-        System.out.println();
-
-        // CASO 3: PEDIDO EXPRESS
-        System.out.println("=== PEDIDO EXPRESS ===");
-
-        pedidoExpress.reservar();
-        pedidoExpress.asignarRepartidor();
-
-        mostrarPedido(pedidoExpress);
-
-        pedidoExpress.cancelar();
-
-        System.out.println();
-
-        // HISTORIAL INDIVIDUAL DE CADA PEDIDO
-        pedidoComida.verHistorial();
-        pedidoEncomienda.verHistorial();
-        pedidoExpress.verHistorial();
-
-        // HISTORIAL GENERAL DE ENTREGAS
-        controlador.verHistorial();
-    }
-
-    public static void mostrarPedido(Pedido pedido) {
-
-        pedido.mostrarResumen();
-
-        System.out.println(
-                "Tiempo estimado de entrega: "
-                        + pedido.calcularTiempoEntrega()
-                        + " minutos"
+        Pedido pedido6 = new PedidoEncomienda(
+                106,
+                "Gran Avenida 3200",
+                10
         );
+
+        // REPARTIDORES CON SUS PEDIDOS ASIGNADOS
+        Repartidor repartidor1 = new Repartidor(
+                "Camila",
+                Arrays.asList(pedido1, pedido2)
+        );
+
+        Repartidor repartidor2 = new Repartidor(
+                "Luis",
+                Arrays.asList(pedido3, pedido4)
+        );
+
+        Repartidor repartidor3 = new Repartidor(
+                "Daniela",
+                Arrays.asList(pedido5, pedido6)
+        );
+
+        // POOL DE 3 HILOS
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+
+        System.out.println("Iniciando entregas...");
+        System.out.println();
+
+        executor.execute(repartidor1);
+        executor.execute(repartidor2);
+        executor.execute(repartidor3);
+
+        // NO SE ACEPTAN MÁS TAREAS
+        executor.shutdown();
+
+        try {
+
+            // ESPERA A QUE TODOS LOS REPARTIDORES TERMINEN
+            if (executor.awaitTermination(1, TimeUnit.MINUTES)) {
+
+                System.out.println();
+                System.out.println(
+                        "Todos los repartidores finalizaron sus entregas."
+                );
+
+            } else {
+
+                System.out.println(
+                        "La simulación superó el tiempo máximo de espera."
+                );
+
+                executor.shutdownNow();
+            }
+
+        } catch (InterruptedException e) {
+
+            System.out.println(
+                    "La ejecución principal fue interrumpida."
+            );
+
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+
+        System.out.println();
+        System.out.println("========== FIN SPEEDFAST ==========");
     }
 }
