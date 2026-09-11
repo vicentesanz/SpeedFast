@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -8,65 +7,75 @@ public class Main {
     public static void main(String[] args) {
 
         System.out.println("========== SPEEDFAST ==========");
-        System.out.println("=== SIMULACIÓN DE ENTREGAS CONCURRENTES ===");
+        System.out.println("=== SINCRONIZACIÓN DE ENTREGAS ===");
         System.out.println();
 
-        // PEDIDOS DEL REPARTIDOR 1
+        // RECURSO COMPARTIDO
+        ZonaDeCarga zonaDeCarga = new ZonaDeCarga();
+
+        // PEDIDOS
         Pedido pedido1 = new PedidoComida(
                 101,
-                "Av. Italia 456",
+                "Santiago Centro",
                 4
         );
 
         Pedido pedido2 = new PedidoExpress(
                 102,
-                "Av. Providencia 1200",
+                "Providencia",
                 6
         );
 
-        // PEDIDOS DEL REPARTIDOR 2
         Pedido pedido3 = new PedidoEncomienda(
                 103,
-                "Av. Santa Rosa 567",
+                "Ñuñoa",
                 7
         );
 
         Pedido pedido4 = new PedidoComida(
                 104,
-                "Av. Irarrázaval 2300",
+                "Recoleta",
                 5
         );
 
-        // PEDIDOS DEL REPARTIDOR 3
         Pedido pedido5 = new PedidoExpress(
                 105,
-                "Av. Apoquindo 1500",
+                "Las Condes",
                 8
         );
 
         Pedido pedido6 = new PedidoEncomienda(
                 106,
-                "Gran Avenida 3200",
+                "La Florida",
                 10
         );
 
-        // REPARTIDORES CON SUS PEDIDOS ASIGNADOS
+        // SE AGREGAN LOS PEDIDOS A LA ZONA DE CARGA COMPARTIDA
+        zonaDeCarga.agregarPedido(pedido1);
+        zonaDeCarga.agregarPedido(pedido2);
+        zonaDeCarga.agregarPedido(pedido3);
+        zonaDeCarga.agregarPedido(pedido4);
+        zonaDeCarga.agregarPedido(pedido5);
+        zonaDeCarga.agregarPedido(pedido6);
+
+        System.out.println();
+
+        // LOS 3 REPARTIDORES COMPARTEN LA MISMA ZONA DE CARGA
         Repartidor repartidor1 = new Repartidor(
                 "Camila",
-                Arrays.asList(pedido1, pedido2)
+                zonaDeCarga
         );
 
         Repartidor repartidor2 = new Repartidor(
                 "Luis",
-                Arrays.asList(pedido3, pedido4)
+                zonaDeCarga
         );
 
         Repartidor repartidor3 = new Repartidor(
                 "Daniela",
-                Arrays.asList(pedido5, pedido6)
+                zonaDeCarga
         );
 
-        // POOL DE 3 HILOS
         ExecutorService executor = Executors.newFixedThreadPool(3);
 
         System.out.println("Iniciando entregas...");
@@ -76,17 +85,15 @@ public class Main {
         executor.execute(repartidor2);
         executor.execute(repartidor3);
 
-        // NO SE ACEPTAN MÁS TAREAS
         executor.shutdown();
 
         try {
 
-            // ESPERA A QUE TODOS LOS REPARTIDORES TERMINEN
             if (executor.awaitTermination(1, TimeUnit.MINUTES)) {
 
                 System.out.println();
                 System.out.println(
-                        "Todos los repartidores finalizaron sus entregas."
+                        "Todos los pedidos han sido entregados correctamente"
                 );
 
             } else {

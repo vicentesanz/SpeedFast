@@ -2,26 +2,30 @@ import java.util.ArrayList;
 
 public abstract class Pedido implements Despachable, Cancelable, Rastreable {
 
-    private int idPedido;
+    private int id;
     private String direccionEntrega;
     private double distanciaKm;
     private String repartidor;
-    private String estado;
+    private EstadoPedido estado;
     private ArrayList<String> historial;
 
-    public Pedido(int idPedido, String direccionEntrega, double distanciaKm) {
-        this.idPedido = idPedido;
+    public Pedido(int id, String direccionEntrega, double distanciaKm) {
+        this.id = id;
         this.direccionEntrega = direccionEntrega;
         this.distanciaKm = distanciaKm;
         this.repartidor = "Sin asignar";
-        this.estado = "Pendiente";
+        this.estado = EstadoPedido.PENDIENTE;
         this.historial = new ArrayList<>();
 
-        historial.add("Pedido creado - Estado: Pendiente");
+        historial.add("Pedido creado - Estado: PENDIENTE");
     }
 
     public int getIdPedido() {
-        return idPedido;
+        return id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getDireccionEntrega() {
@@ -36,16 +40,37 @@ public abstract class Pedido implements Despachable, Cancelable, Rastreable {
         return repartidor;
     }
 
-    public String getEstado() {
+    public EstadoPedido getEstado() {
         return estado;
     }
 
-    protected void setEstado(String estado) {
-        this.estado = estado;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setDireccionEntrega(String direccionEntrega) {
+        this.direccionEntrega = direccionEntrega;
+    }
+
+    public void setDistanciaKm(double distanciaKm) {
+        this.distanciaKm = distanciaKm;
+    }
+
+    public void setEstado(EstadoPedido nuevoEstado) {
+        this.estado = nuevoEstado;
+        historial.add("Estado actualizado a: " + nuevoEstado);
+    }
+
+    public void setEstado(String nuevoEstado) {
+        setEstado(
+                EstadoPedido.valueOf(
+                        nuevoEstado.trim().toUpperCase()
+                )
+        );
     }
 
     public void mostrarResumen() {
-        System.out.println("Pedido #" + idPedido);
+        System.out.println("Pedido #" + id);
         System.out.println("Dirección: " + direccionEntrega);
         System.out.println("Distancia: " + distanciaKm + " km");
         System.out.println("Repartidor asignado: " + repartidor);
@@ -53,28 +78,37 @@ public abstract class Pedido implements Despachable, Cancelable, Rastreable {
     }
 
     public void reservar() {
-        estado = "Reservado";
+        estado = EstadoPedido.EN_REPARTO;
         historial.add("Pedido reservado");
-        System.out.println("Pedido #" + idPedido + " reservado correctamente.");
+        System.out.println(
+                "Pedido #" + id + " reservado correctamente."
+        );
     }
 
     @Override
     public void despachar() {
-        estado = "Despachado";
-        historial.add("Pedido despachado");
-        System.out.println("Pedido #" + idPedido + " despachado correctamente.");
+        estado = EstadoPedido.ENTREGADO;
+        historial.add("Pedido entregado");
+
+        System.out.println(
+                "Pedido #" + id + " entregado correctamente."
+        );
     }
 
     @Override
     public void cancelar() {
-        estado = "Cancelado";
         historial.add("Pedido cancelado");
-        System.out.println("Pedido #" + idPedido + " cancelado exitosamente.");
+
+        System.out.println(
+                "Pedido #" + id + " cancelado exitosamente."
+        );
     }
 
     @Override
     public void verHistorial() {
-        System.out.println("=== HISTORIAL PEDIDO #" + idPedido + " ===");
+        System.out.println(
+                "=== HISTORIAL PEDIDO #" + id + " ==="
+        );
 
         for (String registro : historial) {
             System.out.println("- " + registro);
@@ -91,4 +125,13 @@ public abstract class Pedido implements Despachable, Cancelable, Rastreable {
     }
 
     public abstract int calcularTiempoEntrega();
+
+    @Override
+    public String toString() {
+        return "Pedido{" +
+                "id=" + id +
+                ", direccionEntrega='" + direccionEntrega + '\'' +
+                ", estado=" + estado +
+                '}';
+    }
 }
